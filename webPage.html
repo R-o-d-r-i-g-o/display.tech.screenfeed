@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notícias Atualizadas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 120%;
+            left: 60%;
+            overflow-x: hidden;
+            border-radius: 20px 0 0 20px;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s;
+            width: 80%;
+            animation: fadeIn 2s forwards;
+        }
+
+        #title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #summary {
+            font-size: 16px;
+        }
+
+        #loadingBar {
+            height: 5px;
+            background-color: red;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: decreaseWidth 30s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                top: 120%;
+            }
+            to {
+                top: 80%;
+            }
+        }
+
+        @keyframes decreaseWidth {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0;
+            }
+        }
+
+        @media only screen and (max-width: 901px) {
+            #title {
+                font-size: 16px;
+            }
+
+            #summary {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="modal">
+    <h2 id="title"></h2>
+    <p id="summary"></p>
+    <div id="loadingBar"></div>
+</div>
+
+<script>
+    let currentIndex = 0;
+    let newsData = [];
+    let modal = document.getElementById('modal');
+    let loadingBar = document.getElementById('loadingBar');
+
+    function fadeInModal() {
+        modal.style.display = 'block';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+    }
+
+    function fadeOutModal() {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            fetchData();
+            fadeInModal();
+        }, 500);
+    }
+
+    function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function fetchData() {
+        fetch(`https://kitchen.screenfeed.com/feed/jb55sj1e8qpwms40k2rkark78.json?order=Random&htmld=true&formatter=htmld-nip&_=${new Date().getTime()}`)
+            .then(response => response.json())
+            .then(async data => {
+                // Atualizando o array de dados
+                newsData = data.Content;
+
+                if (newsData.length > 0) {
+                // Verificando se há itens no array
+                    for (let i = 0; i < newsData.length; i++) {
+                        // Obtendo os dados do item atual
+                        const newsItem = newsData[i];
+                        const imageUrl = newsItem.Media[0].Url;
+                        const title = newsItem.Title;
+                        const summary = newsItem.Summary;
+
+                        modal.appendChild(loadingBar);
+
+                        // Atualizando a página com os dados da API
+                        document.body.style.backgroundImage = `url('${imageUrl}')`;
+                        document.getElementById('title').innerText = title;
+                        document.getElementById('summary').innerText = summary;
+
+                        // Aguarde 30 segundos antes de continuar para a próxima iteração
+                        await sleep(28000);
+                        loadingBar.remove();
+                    }
+                } else {
+                    console.error('Array de notícias vazio.');
+                }
+            })
+            .catch(error => console.error('Erro ao recuperar dados da API:', error));
+    }
+
+    // Chama fetchData() inicialmente
+    fetchData();
+
+    // Exibindo o modal com animação de fade
+    fadeInModal();
+
+    // Atualiza os dados a cada 3 minutos
+    setInterval(() => {
+        fetchData();
+    }, 3 * 60 * 1000);
+</script>
+
+</body>
+</html>
