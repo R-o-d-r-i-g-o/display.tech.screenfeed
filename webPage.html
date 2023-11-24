@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notícias Atualizadas</title>
+    <title>DisplayTech - Notícias</title>
     <style>
         body {
             margin: 0;
@@ -18,20 +18,25 @@
             position: fixed;
             top: 120%;
             left: 60%;
+            color: white;
             overflow-x: hidden;
-            border-radius: 20px 0 0 20px;
+            /* border-radius: 20px 0 0 20px; */
             transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px 30px 20px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
             transition: opacity 0.5s;
             width: 80%;
             animation: fadeIn 2s forwards;
         }
 
+        .changing-background {
+            opacity: 0;  /* Configurando a opacidade para 0 durante a transição */
+        }
+
         #title {
-            font-size: 24px;
+            font-size: 30px;
             font-weight: bold;
             margin-bottom: 10px;
         }
@@ -40,9 +45,19 @@
             font-size: 16px;
         }
 
+        #red-line-effect {
+            height: 100%;
+            width: 3%;
+            background: red;
+            position: absolute;
+            z-index: 2;
+            left: 0px;
+            top: 0px;
+        }
+
         #loadingBar {
             height: 5px;
-            background-color: red;
+            background-color: black;
             width: 100%;
             position: absolute;
             bottom: 0;
@@ -70,7 +85,7 @@
 
         @media only screen and (max-width: 901px) {
             #title {
-                font-size: 16px;
+                font-size: 24px;
             }
 
             #summary {
@@ -84,6 +99,7 @@
 <div id="modal">
     <h2 id="title"></h2>
     <p id="summary"></p>
+    <div id="red-line-effect"></div>
     <div id="loadingBar"></div>
 </div>
 
@@ -133,8 +149,10 @@
 
                         // Atualizando a página com os dados da API
                         document.body.style.backgroundImage = `url('${imageUrl}')`;
+                        document.body.style.transition = 'background-image 1.8s ease-in-out';
+
                         document.getElementById('title').innerText = title;
-                        document.getElementById('summary').innerText = summary;
+                        // document.getElementById('summary').innerText = summary;
 
                         // Aguarde 30 segundos antes de continuar para a próxima iteração
                         await sleep(28000);
