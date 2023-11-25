@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notícias Atualizadas</title>
+    <title>DisplayTech - Notícias</title>
     <style>
         body {
             width: 100vw;
@@ -14,28 +14,29 @@
             align-items: flex-end;
             padding-top: 90%;
             overflow: hidden;
+            font-family: Arial, sans-serif;
         }
 
         #modal {
             display: none;
             position: fixed;
             top: 50%;
-            left: 50%;
+            left: 86%;
+            color: white;
             transform-origin: center center;
             transform: translate(-50%, -50%) rotate(270deg); /* Rotação de 90 graus */
             overflow-x: hidden;
-            border-radius: 20px 0 0 20px;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px 30px 20px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
             transition: opacity 0.5s;
             width: 60%;
             animation: fadeIn 2s forwards;
         }
 
         #title {
-            font-size: 24px;
+            font-size: 30px;
             font-weight: bold;
             margin-bottom: 10px;
         }
@@ -44,9 +45,19 @@
             font-size: 16px;
         }
 
+        #red-line-effect {
+            height: 100%;
+            width: 3%;
+            background: red;
+            position: absolute;
+            z-index: 2;
+            left: 0px;
+            top: 0px;
+        }
+
         #loadingBar {
             height: 5px;
-            background-color: red;
+            background-color: black;
             width: 100%;
             position: absolute;
             bottom: 0;
@@ -96,7 +107,7 @@
 
         @media only screen and (max-width: 901px) {
             #title {
-                font-size: 16px;
+                font-size: 24px;
             }
 
             #summary {
@@ -110,6 +121,7 @@
 <div id="modal">
     <h2 id="title"></h2>
     <p id="summary"></p>
+    <div id="red-line-effect"></div>
     <div id="loadingBar"></div>
 </div>
 
@@ -161,7 +173,7 @@
                         // document.body.style.backgroundImage = `url('${imageUrl}')`;
                         document.getElementById("background_image").src = imageUrl;
                         document.getElementById('title').innerText = title;
-                        document.getElementById('summary').innerText = summary;
+                        // document.getElementById('summary').innerText = summary;
 
                         // Aguarde 30 segundos antes de continuar para a próxima iteração
                         await sleep(28000);
