@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DisplayTech - Notícias</title>
+    <style>
+        body {
+            height: 80%;
+            width: 80%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: flex-end;
+            padding-top: 83%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #modal {
+            display: none;
+            position: absolute;
+            top: 10;
+            left: 84%;
+            color: white;
+            transform-origin: center center;
+            transform: translate(-50%, -50%) rotate(270deg); /* Rotação de 90 graus */
+            overflow-x: hidden;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px 20px 20px 70px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+            transition: opacity 0.5s;
+            width: 80%;
+            animation: fadeIn 2s forwards;
+        }
+
+        #title {
+            text-align: left;
+            font-size: 50px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #summary {
+            font-size: 16px;
+        }
+
+        #red-line-effect {
+            height: 100%;
+            width: 3%;
+            background: red;
+            position: absolute;
+            z-index: 2;
+            left: 0px;
+            top: 0px;
+        }
+
+        #loadingBar {
+            height: 5px;
+            background-color: black;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: decreaseWidth 30s forwards;
+        }
+
+        #background_image {
+            transform: rotate(270deg);
+            min-width: 1079px !important;
+            min-height: 1920px !important;
+            position: absolute;
+            top: -49%;
+            left: 21.9%;
+            /* height: 1920px;
+            width: 1079px; */
+            /* margin: auto; */
+        }
+
+        @keyframes fadeIn {
+            from {
+                top: -100%; /* Posição inicial fora da tela acima */
+            }
+            to {
+                top: 0%; /* Posição final no centro */
+            }
+        }
+
+        @keyframes decreaseWidth {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0;
+            }
+        }
+
+        @media screen and (min-width: 600px) {
+            @keyframes fadeIn {
+                from {
+                    top: -100%; /* Posição inicial fora da tela acima */
+                }
+                to {
+                    top: 44%; /* Posição final no centro para telas menores */
+                }
+            }
+            #modal {
+                width: 45%;
+            }
+        }
+
+        @media only screen and (max-width: 901px) {
+            #title {
+                font-size: 24px;
+            }
+
+            #summary {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<img id="background_image"/>
+<div id="modal">
+    <h2 id="title"></h2>
+    <p id="summary"></p>
+    <div id="red-line-effect"></div>
+    <div id="loadingBar"></div>
+</div>
+
+<script>
+    let currentIndex = 0;
+    let newsData = [];
+    let modal = document.getElementById('modal');
+    let loadingBar = document.getElementById('loadingBar');
+
+    function fadeInModal() {
+        modal.style.display = 'block';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+    }
+
+    function fadeOutModal() {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+            fetchData();
+            fadeInModal();
+        }, 500);
+    }
+
+    function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function fetchData() {
+        fetch(`https://kitchen.screenfeed.com/feed/jb55sj1e8qpwms40k2rkark78.json?order=Random&htmld=true&formatter=htmld-nip&_=${new Date().getTime()}`)
+            .then(response => response.json())
+            .then(async data => {
+                // Atualizando o array de dados
+                newsData = data.Content;
+
+                if (newsData.length > 0) {
+                // Verificando se há itens no array
+                    for (let i = 0; i < newsData.length; i++) {
+                        // Obtendo os dados do item atual
+                        const newsItem = newsData[i];
+                        const imageUrl = newsItem.Media[0].Url;
+                        const title = newsItem.Title;
+                        const summary = newsItem.Summary;
+
+                        modal.appendChild(loadingBar);
+
+                        // Atualizando a página com os dados da API
+                        // document.body.style.backgroundImage = `url('${imageUrl}')`;
+                        document.getElementById("background_image").src = imageUrl;
+                        document.getElementById('title').innerText = title;
+                        // document.getElementById('summary').innerText = summary;
+
+                        // Aguarde 30 segundos antes de continuar para a próxima iteração
+                        await sleep(28000);
+                        loadingBar.remove();
+                    }
+                } else {
+                    console.error('Array de notícias vazio.');
+                }
+            })
+            .catch(error => console.error('Erro ao recuperar dados da API:', error));
+    }
+
+    // Chama fetchData() inicialmente
+    fetchData();
+
+    // Exibindo o modal com animação de fade
+    fadeInModal();
+
+    // Atualiza os dados a cada 3 minutos
+    setInterval(() => {
+        fetchData();
+    }, 3 * 60 * 1000);
+</script>
+
+</body>
+</html>
